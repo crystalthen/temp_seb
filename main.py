@@ -3,70 +3,66 @@ from game_data import data
 from higherlower_art import vs, logo
 
 import os
-clear = lambda: os.system('cls')
+clear = lambda: os.system('clear')
 
 
-def select_profile():
-	num = random.randint(0,len(data)-1)
-	return data[num]
-	
+def select_profiles():
+    a, b = random.sample(range(0,len(data)-1), 2)
+    vs_profiles = {
+        "a": data[a],
+        "b": data[b]
+    }
+    return vs_profiles
+
+
 def compare_profiles(a, b):
-	if a["follower_count"] > b["follower_count"]:
-		return a
-	else:
-		return b
-		
-def print_profile(a):
+    if a["follower_count"] > b["follower_count"]:
+        return a["name"]
+    return b["name"]
 
-	name = a["name"]
-	profesh = a["description"]
-	country = a["country"]
-	followers = a["follower_count"]
-	
-	return(f"{name}, a {profesh}, from {country}.")
+
+def print_profile(profile):
+    name = profile["name"]
+    profesh = profile["description"]
+    country = profile["country"]
+    followers = profile["follower_count"]
+
+    return(f"{name}, a {profesh}, from {country}.")
+
 
 def play_game():
-	
-	clear()
-	vs_a = select_profile()
-	vs_b = select_profile()
-	
-	while vs_a == vs_b:
-		vs_b = select_profile()
+    score = 0
+    while True:
+        clear()
+        print(logo)
+        print(f"Your score is: {score}")
 
-	game_active = True
-	score = 0
-	print(logo)
-	
-	while game_active == True:
-		
-		if score > 0:
-			clear()
-			print(logo)
-			print(f"Correct, your score is: {score}")
-		
-		
-		print("Compare A:",print_profile(vs_a))
-		print(vs)
-		print("Compare B:",print_profile(vs_b))
-		
-		if input("Who has more followers? a or b?") == "a":
-			if vs_a == compare_profiles(vs_a, vs_b):
-				score += 1
-				vs_b = select_profile()
-			else:
-				print(f"Wrong. Your score is {score}")
-				game_active = False
-				if input("Play again? (y/n)") == "y": play_game()
-				
-		else:
-			if vs_b == compare_profiles(vs_a, vs_b):
-				score += 1
-				vs_a = vs_b
-				vs_b = select_profile()
-			else:
-				print(f"Wrong. Your score is {score}")
-				game_active = False	
-				if input("Play again? (y/n)") == "y": play_game()
-		
-play_game()
+        vs_profiles = select_profiles()
+        print("Compare A:",print_profile(vs_profiles["a"]))
+        print(vs)
+        print("Compare B:",print_profile(vs_profiles["b"]))
+
+        # Ask for guess
+        guess = input("Who has more followers? a or b? ")
+        guess_name = vs_profiles[guess]['name']
+        # Find the winner
+        winner = compare_profiles(vs_profiles["a"], vs_profiles["b"])
+
+        # Check if player guessed correctly
+        if guess_name == winner:
+            score += 1
+            print(f"Correct, your score is: {score}")
+            # Prompt to continue
+            if input("Play again? (y/n) ") == "n":
+                break
+        else:
+            print(f"Wrong. Your score is {score}")
+            break
+
+
+def main():
+    play_game()
+
+
+if __name__ == "__main__":
+    main()
